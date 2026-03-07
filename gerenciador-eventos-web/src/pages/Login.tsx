@@ -28,32 +28,36 @@ const Login: React.FC = () => {
 }, []);
 
     const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
+    e.preventDefault();
+    try {
+      const response = await api.post('/administradores/login', {
+        email: email,
+        senha: password
+      });
 
-        try{
-            const response = await api.post('/administradores/login', {
-                email: email,
-                senha: password
-            });
+      const token = response.data.token;
+      const id = response.data.id || response.data.administrador?.id || response.data.admin?.id;
 
-            const { token } = response.data;
+      if (token && id) {
+        localStorage.setItem('@NekiEvents:token', token);
+        localStorage.setItem('@NekiEvents:adminId', String(id));
 
-            localStorage.setItem('@NekiEvents:token', token);
-
-            if(rememberMe) {
-                localStorage.setItem('@NekiEvents:email', email);
-                localStorage.setItem('@NekiEvents:password', password);
-            } else {
-                localStorage.removeItem('@NekiEvents:email');
-                localStorage.removeItem('@NekiEvents:password');
-            }
-
-            Navigate('/home');
-        } catch (error) {
-            console.error(error);
-            alert('Falha no login. Verifique email e senha.')
+        if (rememberMe) {
+          localStorage.setItem('@NekiEvents:email', email);
+          localStorage.setItem('@NekiEvents:password', password);
+        } else {
+          localStorage.removeItem('@NekiEvents:email');
+          localStorage.removeItem('@NekiEvents:password');
         }
-    };
+        Navigate('/home');
+      } else {
+        alert("Erro: O servidor não retornou o ID do usuário corretamente.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Falha no login. Verifique email e senha.');
+    }
+  };
 
     return(
 

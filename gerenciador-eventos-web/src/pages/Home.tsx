@@ -10,13 +10,32 @@ const Home: React.FC = () => {
   const [currentEvento, setCurrentEvento] = useState<Partial<Evento>>({});
 
   const fetchEventos = async () => {
-    try {
-      const { data } = await api.get('/eventos');
-      setEventos(data || []);
-    } catch (err) {
-      console.error(err);
+  try {
+    const adminId = localStorage.getItem('@NekiEvents:adminId');
+
+    if (!adminId) {
+        console.error("Admin ID não encontrado");
+        return;
     }
-  };
+
+    const { data } = await api.get(`/eventos/admin/${adminId}`);
+
+    const eventos = data.map((ev: any) => ({
+      ...ev,
+      nome: ev.titulo || ev.nome,
+      imagemUrl: ev.imagem || ev.imagemUrl
+    }));
+
+    setEventos(eventos);
+    console.log("Eventos carregados com sucesso!");
+
+  } catch (err: any) {
+    console.error("Erro ao buscar eventos:", err.response?.status, err.response?.data);
+    if (err.response?.status === 405) {
+        alert("Erro 405: A rota no Java não aceita GET. Verifique o Controller.");
+    }
+  }
+};
 
   useEffect(() => {
     setTimeout(() => fetchEventos(), 0);
@@ -29,17 +48,35 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleSave = async () => {
+ const handleSave = async () => {
+    const adminId = localStorage.getItem('@NekiEvents:adminId');
+    
+    if (!adminId) {
+      alert("Sessão inválida. Por favor, faça login novamente.");
+      return;
+    }
+
     try {
+      const eventoFinal = {
+        titulo: currentEvento.nome,           
+        localizacao: currentEvento.localizacao,
+        data: currentEvento.data,
+        imagem: currentEvento.imagemUrl,    
+        idAdministrador: Number(adminId)       
+      };
+
       if (currentEvento.id) {
-        await api.put(`/eventos/${currentEvento.id}`, currentEvento);
+        await api.put(`/eventos/${currentEvento.id}`, eventoFinal);
       } else {
-        await api.post('/eventos', currentEvento);
+        await api.post('/eventos', eventoFinal);
       }
+
       setShowModal(false);
       fetchEventos();
-    } catch  {
-      alert("Erro ao salvar");
+      alert("Salvo com sucesso!");
+    } catch (error: any) {
+      console.error("Erro no Java:", error.response?.data);
+      alert("Erro ao salvar. Verifique se todos os campos estão preenchidos.");
     }
   };
 
@@ -57,20 +94,29 @@ const Home: React.FC = () => {
         </S.TitleContainer>
 
         <S.Grid>
-          {eventos.map(ev => (
-            <S.Card key={ev.id}>
-              <img src={ev.imagemUrl} alt={ev.nome} />
-              <S.CardInfo>
-                <h3>{ev.nome}</h3>
-                <p>📅 {ev.data} | 📍 {ev.localizacao}</p>
-              </S.CardInfo>
-              <S.CardActions>
-                <button onClick={() => { setCurrentEvento(ev); setShowModal(true); }}>Editar</button>
-                <button onClick={() => handleDelete(ev.id)}>Excluir</button>
-              </S.CardActions>
-            </S.Card>
-          ))}
-        </S.Grid>
+  {eventos.map(ev => (
+    <S.Card key={ev.id}>
+      <img src={ev.imagem || ev.imagemUrl} alt={ev.titulo || ev.nome} />
+      <S.CardInfo>
+        <h3>{ev.titulo || ev.nome}</h3>
+        <p>📅 {ev.data} | 📍 {ev.localizacao}</p>
+      </S.CardInfo>
+      <S.CardActions>
+        <button onClick={() => { 
+          setCurrentEvento({
+            id: ev.id,
+            nome: ev.titulo || ev.nome,
+            data: ev.data,
+            localizacao: ev.localizacao,
+            imagemUrl: ev.imagem || ev.imagemUrl
+          }); 
+          setShowModal(true); 
+        }}>Editar</button>
+        <button onClick={() => handleDelete(ev.id)}>Excluir</button>
+      </S.CardActions>
+    </S.Card>
+  ))}
+</S.Grid>
       </S.Main>
 
       {showModal && (

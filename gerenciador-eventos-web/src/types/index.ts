@@ -1,8 +1,10 @@
 export interface Evento {
     id: number;
-    nome: string;
+    titulo?: string;
+    nome?: string;
     data: string;
     localizacao: string;
+    imagem?: string;
     imagemUrl: string;
 }
 

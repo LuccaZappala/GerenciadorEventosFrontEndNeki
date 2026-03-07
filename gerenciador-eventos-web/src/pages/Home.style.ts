@@ -2,8 +2,8 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   display: flex;
-  flex-direction: column; // Faz um ficar embaixo do outro
-  width: 100vw;           // Ocupa toda a largura da tela
+  flex-direction: column; 
+  width: 100vw;           
   min-height: 100vh;
   background-color: #f4f4f4;
   margin: 0;
@@ -17,7 +17,7 @@ export const Header = styled.header`
   padding: 0 5%;
   height: 80px;
   background-color: #FFFFFF;
-  width: 100%; // Garante que o header atravesse a tela toda
+  width: 100%;
   box-sizing: border-box;
   box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
 
@@ -39,8 +39,8 @@ export const Header = styled.header`
 export const Main = styled.main`
   flex: 1;
   width: 100%;
-  max-width: 1200px;    // Centraliza o conteúdo em telas muito grandes
-  margin: 0 auto;       // Centraliza horizontalmente
+  max-width: 1200px;   
+  margin: 0 auto;    
   padding: 40px 5%;
   box-sizing: border-box;
 `;
