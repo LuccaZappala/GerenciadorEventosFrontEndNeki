@@ -12,18 +12,20 @@ const Login: React.FC = () => {
     const[email, setEmail] = useState('');
     const[password, setPassword] = useState('');
     const[rememberMe, setRememberMe] = useState(false);
-
     const Navigate = useNavigate(); 
 
     useEffect(() => {
-        const savedEmail = localStorage.getItem('@NekiEvents: email');
-        const savedPass = localStorage.getItem('@NekiEvents: password');
-        if(savedEmail && savedPass){
+    const savedEmail = localStorage.getItem('@NekiEvents: email');
+    const savedPass = localStorage.getItem('@NekiEvents: password');
+
+    if (savedEmail && savedPass) {
+        setTimeout(() => {
             setEmail(savedEmail);
             setPassword(savedPass);
             setRememberMe(true);
-        }
-    }, []);
+        }, 0);
+    }
+}, []);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();

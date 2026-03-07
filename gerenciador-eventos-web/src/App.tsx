@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login.tsx'
+import Home from './pages/Home.tsx';
 
 const Cadastro = () => <div style={{color: 'white', padding: '20px'}}>Tela de Cadastro em breve</div>;
-const Home = () => <div style={{color: 'white', padding: '20px'}}>Login realizado com sucesso.</div>;
+
 
 function App() {
 
