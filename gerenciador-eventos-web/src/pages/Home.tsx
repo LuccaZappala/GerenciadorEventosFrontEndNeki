@@ -120,18 +120,41 @@ const Home: React.FC = () => {
       </S.Main>
 
       {showModal && (
-        <S.ModalOverlay>
-          <S.ModalContent>
-            <h2>{currentEvento.id ? 'Editar' : 'Novo'}</h2>
-            <input placeholder="Nome" value={currentEvento.nome || ''} onChange={e => setCurrentEvento({...currentEvento, nome: e.target.value})} />
-            <input type="date" value={currentEvento.data || ''} onChange={e => setCurrentEvento({...currentEvento, data: e.target.value})} />
-            <input placeholder="Local" value={currentEvento.localizacao || ''} onChange={e => setCurrentEvento({...currentEvento, localizacao: e.target.value})} />
-            <input placeholder="URL Imagem" value={currentEvento.imagemUrl || ''} onChange={e => setCurrentEvento({...currentEvento, imagemUrl: e.target.value})} />
-            <button onClick={handleSave}>SALVAR</button>
-            <button onClick={() => setShowModal(false)}>Cancelar</button>
-          </S.ModalContent>
-        </S.ModalOverlay>
+  <S.ModalOverlay>
+    <S.ModalContent>
+      <h2>{currentEvento.id ? 'Editar Evento' : 'Novo Evento'}</h2>
+
+      {!currentEvento.id && (
+        <>
+          <input 
+            placeholder="Nome do Evento" 
+            value={currentEvento.nome || ''} 
+            onChange={e => setCurrentEvento({...currentEvento, nome: e.target.value})} 
+          />
+          <input 
+            placeholder="URL da Imagem" 
+            value={currentEvento.imagemUrl || ''} 
+            onChange={e => setCurrentEvento({...currentEvento, imagemUrl: e.target.value})} 
+          />
+        </>
       )}
+
+      <input 
+        type="date" 
+        value={currentEvento.data || ''} 
+        onChange={e => setCurrentEvento({...currentEvento, data: e.target.value})} 
+      />
+      <input 
+        placeholder="Localização" 
+        value={currentEvento.localizacao || ''} 
+        onChange={e => setCurrentEvento({...currentEvento, localizacao: e.target.value})} 
+      />
+
+      <button onClick={handleSave}>SALVAR</button>
+      <button onClick={() => setShowModal(false)}>Cancelar</button>
+    </S.ModalContent>
+  </S.ModalOverlay>
+)}
     </S.Container>
   );
 };
