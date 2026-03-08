@@ -36,6 +36,19 @@ export const Header = styled.header`
   }
 `;
 
+
+export const AdminGreeting = styled.h2`
+  color: #2B94A7;
+  font-size: 1.2rem;
+  font-weight: 400;
+  
+  span {
+    color: #2B94A7; /* Cor azul claro da Neki para destacar o nome */
+    font-weight: bold;
+    text-transform: capitalize;
+  }
+`;
+
 export const Main = styled.main`
   flex: 1;
   width: 100%;
@@ -82,19 +95,37 @@ export const Grid = styled.div`
 `;
 
 export const Card = styled.div`
-
   background: white;
-
   border-radius: 8px;
-
   overflow: hidden;
-
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-
   display: flex;
+  flex-direction: column; 
+  justify-content: space-between; 
+  height: 100%;
+  transition: all 0.3s ease;
+  position: relative;
 
-  flex-direction: column;
+  &:hover {
+    transform: translateY(-10px) scale(1.03);
+    z-index: 10;
+  }
+`;
 
+export const ImageContainer = styled.div`
+  width: 100%;
+  height: 230px;
+  overflow: hidden; 
+
+  position: relative;
+  
+`;
+
+export const CardImage = styled.img`
+  width: 100%; 
+  height: 250px; 
+  object-fit: cover; 
+  
 `;
 
 
@@ -153,6 +184,8 @@ export const ModalOverlay = styled.div`
 
   align-items: center;
 
+  z-index: 1000;
+
 `;
 
 export const ModalContent = styled.div`
@@ -182,11 +215,5 @@ export const ModalContent = styled.div`
     border-radius: 4px;
 
   }
-
-
-
-  button.save { background: #28a745; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; }
-
-  button.close { background: #6c757d; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; }
 
 `;

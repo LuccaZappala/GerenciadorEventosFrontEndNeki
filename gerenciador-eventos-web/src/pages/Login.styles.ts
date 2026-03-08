@@ -55,11 +55,13 @@ export const FormCard = styled.form`
     display: flex;
     flex-direction: column;
     gap: 15px;
+    align-items: center;
 
     h2{
         color: #FFF;
         font-size: 1.8rem;
         margin-bottom: 10px;
+        
     }
 `;
 
@@ -91,7 +93,7 @@ export const CheckBoxContainer = styled.div`
 `;
 
 export const Button = styled.button` 
-    width: 100%;
+    width: 70%;
     padding: 16px;
     border-radius: 8px;
     border: none;

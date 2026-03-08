@@ -9,6 +9,8 @@ const Home: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentEvento, setCurrentEvento] = useState<Partial<Evento>>({});
 
+  const adminNome = localStorage.getItem('usuarioNome') || 'Administrador';
+
   const fetchEventos = async () => {
   try {
     const adminId = localStorage.getItem('@NekiEvents:adminId');
@@ -84,7 +86,18 @@ const Home: React.FC = () => {
     <S.Container>
       <S.Header>
         <img src={logoImg} alt="Logo Neki" />
-        <button onClick={() => { localStorage.clear(); window.location.href='/'; }}>Sair</button>
+        <S.AdminGreeting>
+            Bem-vindo, <span>{adminNome}!</span>
+        </S.AdminGreeting>
+        <button onClick={() => { 
+          localStorage.removeItem('@NekiEvents:token'); 
+          localStorage.removeItem('@NekiEvents:adminId');
+          localStorage.setItem('usuarioNome', ''); 
+
+    window.location.href='/'; 
+}}>
+  Sair
+</button>
       </S.Header>
 
       <S.Main>
@@ -96,7 +109,13 @@ const Home: React.FC = () => {
         <S.Grid>
   {eventos.map(ev => (
     <S.Card key={ev.id}>
-      <img src={ev.imagem || ev.imagemUrl} alt={ev.titulo || ev.nome} />
+      
+        <S.CardImage 
+          src={ev.imagem || ev.imagemUrl} 
+          alt={ev.titulo || ev.nome} 
+        />
+        
+      
       <S.CardInfo>
         <h3>{ev.titulo || ev.nome}</h3>
         <p>📅 {ev.data} | 📍 {ev.localizacao}</p>
@@ -125,18 +144,11 @@ const Home: React.FC = () => {
       <h2>{currentEvento.id ? 'Editar Evento' : 'Novo Evento'}</h2>
 
       {!currentEvento.id && (
-        <>
-          <input 
-            placeholder="Nome do Evento" 
-            value={currentEvento.nome || ''} 
-            onChange={e => setCurrentEvento({...currentEvento, nome: e.target.value})} 
-          />
-          <input 
-            placeholder="URL da Imagem" 
-            value={currentEvento.imagemUrl || ''} 
-            onChange={e => setCurrentEvento({...currentEvento, imagemUrl: e.target.value})} 
-          />
-        </>
+        <input 
+          placeholder="Nome do Evento" 
+          value={currentEvento.nome || ''} 
+          onChange={e => setCurrentEvento({...currentEvento, nome: e.target.value})} 
+        />
       )}
 
       <input 
@@ -150,8 +162,30 @@ const Home: React.FC = () => {
         onChange={e => setCurrentEvento({...currentEvento, localizacao: e.target.value})} 
       />
 
-      <button onClick={handleSave}>SALVAR</button>
-      <button onClick={() => setShowModal(false)}>Cancelar</button>
+      {!currentEvento.id && (
+        <div style={{ marginTop: '10px' }}>
+          <label style={{ color: '#FFF', display: 'block', marginBottom: '5px' }}>Anexar Imagem:</label>
+          <input 
+            type="file" 
+            accept="image/*" 
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  setCurrentEvento({...currentEvento, imagemUrl: reader.result as string});
+                };
+                reader.readAsDataURL(file);
+              }
+            }} 
+          />
+        </div>
+      )}
+
+      <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+        <button onClick={handleSave}>SALVAR</button>
+        <button onClick={() => setShowModal(false)}>Cancelar</button>
+      </div>
     </S.ModalContent>
   </S.ModalOverlay>
 )}
