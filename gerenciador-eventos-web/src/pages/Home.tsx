@@ -9,6 +9,9 @@ const Home: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentEvento, setCurrentEvento] = useState<Partial<Evento>>({});
 
+  const [showImagePreview, setShowImagePreview] = useState(false);
+  const [selectedImage, setSelectedImage] = useState('');
+
   const adminNome = localStorage.getItem('usuarioNome') || 'Administrador';
 
   const fetchEventos = async () => {
@@ -51,36 +54,53 @@ const Home: React.FC = () => {
   };
 
  const handleSave = async () => {
-    const adminId = localStorage.getItem('@NekiEvents:adminId');
-    
-    if (!adminId) {
-      alert("Sessão inválida. Por favor, faça login novamente.");
-      return;
+  const adminId = localStorage.getItem('@NekiEvents:adminId');
+  
+  if (!adminId) {
+    alert("Sessão inválida. Por favor, faça login novamente.");
+    return;
+  }
+
+  const { nome, data, localizacao, imagemUrl } = currentEvento;
+
+  const isNomeValido = nome && nome.trim() !== '';
+  const isDataValida = data && data.trim() !== '';
+  const isLocalValido = localizacao && localizacao.trim() !== '';
+  const isImagemValida = currentEvento.id ? true : (imagemUrl && imagemUrl.trim() !== '');
+
+  if (!isNomeValido || !isDataValida || !isLocalValido || !isImagemValida) {
+    alert("Por favor, preencha todos os campos obrigatórios (Nome, Data, Localização e Imagem).");
+    return; 
+  }
+
+  try {
+    const eventoFinal = {
+      titulo: nome?.trim(),           
+      localizacao: localizacao?.trim(),
+      data: data,
+      imagem: imagemUrl,    
+      idAdministrador: Number(adminId)       
+    };
+
+    if (currentEvento.id) {
+      await api.put(`/eventos/${currentEvento.id}`, eventoFinal);
+    } else {
+      await api.post('/eventos', eventoFinal);
     }
 
-    try {
-      const eventoFinal = {
-        titulo: currentEvento.nome,           
-        localizacao: currentEvento.localizacao,
-        data: currentEvento.data,
-        imagem: currentEvento.imagemUrl,    
-        idAdministrador: Number(adminId)       
-      };
+    setShowModal(false);
+    fetchEventos();
+    alert("Salvo com sucesso!");
+  } catch (error: any) {
+    console.error("Erro no Java:", error.response?.data);
+    alert("Erro ao salvar o evento. Verifique os dados e tente novamente.");
+  }
+};
 
-      if (currentEvento.id) {
-        await api.put(`/eventos/${currentEvento.id}`, eventoFinal);
-      } else {
-        await api.post('/eventos', eventoFinal);
-      }
-
-      setShowModal(false);
-      fetchEventos();
-      alert("Salvo com sucesso!");
-    } catch (error: any) {
-      console.error("Erro no Java:", error.response?.data);
-      alert("Erro ao salvar. Verifique se todos os campos estão preenchidos.");
-    }
-  };
+const handleImageClick = (img: string) => {
+  setSelectedImage(img);
+  setShowImagePreview(true);
+};
 
   return (
     <S.Container>
@@ -113,9 +133,10 @@ const Home: React.FC = () => {
         <S.CardImage 
           src={ev.imagem || ev.imagemUrl} 
           alt={ev.titulo || ev.nome} 
+          onClick={() => handleImageClick(ev.imagem || ev.imagemUrl)}
+          style={{ cursor: 'pointer' }} 
         />
         
-      
       <S.CardInfo>
         <h3>{ev.titulo || ev.nome}</h3>
         <p>📅 {ev.data} | 📍 {ev.localizacao}</p>
@@ -186,6 +207,19 @@ const Home: React.FC = () => {
         <button onClick={handleSave}>SALVAR</button>
         <button onClick={() => setShowModal(false)}>Cancelar</button>
       </div>
+    </S.ModalContent>
+  </S.ModalOverlay>
+)}
+
+{showImagePreview && (
+  <S.ModalOverlay onClick={() => setShowImagePreview(false)}>
+    <S.ModalContent style={{ background: 'transparent', boxShadow: 'none', padding: 0 }}>
+      <img 
+        src={selectedImage} 
+        alt="Preview" 
+        style={{ maxWidth: '90vw', maxHeight: '90vh', borderRadius: '8px' }} 
+      />
+      <p style={{ color: '#FFF', textAlign: 'center', marginTop: '10px' }}>Clique fora para fechar</p>
     </S.ModalContent>
   </S.ModalOverlay>
 )}
